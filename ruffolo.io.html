@@ -1,0 +1,320 @@
+
+<!-- saved from url=(0023)http://ruffolo.io:5000/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="./ruffolo.io_files/gwoyeu_romantzyh.js.download"></script> 
+    <script src="./ruffolo.io_files/pinyin2hanzi.js.download"></script> 
+    <style>
+
+  table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+  }
+  
+  td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #dddddd;
+  }
+
+
+#myTable td {
+  text-align: center;
+}
+      #centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      #text {
+        font-size: 24px;
+        text-align: center;
+      }
+            .square {
+        width: 50px;
+        height: 50px;
+        background-color: yellow;
+        display: inline-block;
+        text-align: center;
+        font-size: 24px;
+      }
+          input {
+        margin-top: 0.75rem;
+      }
+  
+      /* To make input on focus 
+      look more distinct */
+      input:focus {
+        outline: none !important;
+        border: 3px solid green;
+        box-shadow: 0 0 10px green;
+      }
+      .footer{ 
+        position: fixed;     
+        text-align: center;    
+        bottom: 0px; 
+        width: 100%;
+      }  
+    </style>
+  </head>
+<!--HTML section-->
+  <body>
+    <center>
+    <h1>Pinyin to Gwoyeu Romatzyh</h1>
+  </center>
+    <div id="center">
+      <div id="text"></div>
+    </div>
+    <center>
+      
+      <button class="square" id="square1"></button>
+      <button class="square" id="square2"></button>
+      <button class="square" id="square3"></button>
+      <button class="square" id="square4"></button>
+    </center>
+    <br><br>
+    <center>
+      <input type="text" id="inputText"><button id="addButton">add</button><br><br>
+      
+      <table id="myTable" border="1" style="margin: 0 20%;">
+  <thead>
+    <tr>
+      <th>Pinyin</th>
+      <th>Gwoyeu Romatzyh</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+    </center>
+    <div class="footer">
+      <button id="myButton">How this works?</button>
+    </div>
+
+
+<!--Script section-->
+<script>
+  const button = document.getElementById('myButton');
+  button.addEventListener('click', function() {
+    alert(`Enter pinyin in the text box.
+
+For entering a tone, the 4 yellow boxes will populate the 4 tones upon entering a vowel.
+
+For example: bái fù měi -> {bai} {fuh,fwu} {meei}
+
+Double click a tables row to delete the entry.
+`);
+  });
+</script>
+<script>
+
+const locale = undefined // set this if it matters, otherwise use default
+const options = { sensitivity: 'base' }
+
+
+
+
+  let textvalue = document.getElementById("text").innerHTML;
+  let inputText = document.getElementById("inputText");
+  let square1 = document.getElementById("square1");
+  let square2 = document.getElementById("square2");
+  let square3 = document.getElementById("square3");
+  let square4 = document.getElementById("square4");
+  let squares = document.getElementsByClassName("square");
+  let table = document.getElementById("myTable");
+  let textbox = document.getElementById("inputText");
+  textbox.addEventListener("keypress", function(event) {
+    let charCode = event.charCode;
+    if (!(charCode >= 65 && charCode <= 90) && !(charCode >= 97 && charCode <= 122) && charCode != 32) {
+      event.preventDefault();
+    }
+  });
+  
+  function unique(array){
+            var len = array.length;
+            for(var i = 0; i < len; i++) for(var j = i + 1; j < len; j++) 
+                if(array[j] == array[i]){
+                    array.splice(j,1);
+                    j--;
+                    len--;
+                }
+            return array;
+        }
+  
+  document.addEventListener("click", function(event) {
+  if (!event.target.matches("#inputText")) {
+    document.getElementById("inputText").focus();
+  }
+});
+
+  document.getElementById("addButton").addEventListener("click", function() {
+
+    function remove(arrOriginal, elementToRemove){
+       return arrOriginal.filter(function(el){return el !== elementToRemove});
+    }
+    
+    //applies tonal number to pinyin tone(needed for M json)
+    let row = table.insertRow();
+    let pinyinCell = row.insertCell(0);
+    let gwoyeuRomatzyhCell = row.insertCell(1);
+    pinyinCell.innerHTML = inputText.value.toLowerCase();
+    gwoyeuRomatzyhCell.innerHTML = inputText.value.toLowerCase();
+    let input = inputText.value.toLowerCase();
+    input = input.split(" ");
+    let chk_pos = []
+    for (let i = 0; i < input.length; i++) {
+      
+      if (input[i].includes("ā") || input[i].includes("ē") || input[i].includes("ī") || input[i].includes("ō") || input[i].includes("ū")) {
+        tone = "1"
+        chk_pos.push([i,input[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "")+tone])
+        console.log(tone);
+      }
+      else if (input[i].includes("á") || input[i].includes("é") || input[i].includes("í") || input[i].includes("ó") || input[i].includes("ú")) {
+        tone = "2"
+        chk_pos.push([i,input[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "")+tone])
+        console.log(tone)
+      }
+      else if (input[i].includes("ǎ") || input[i].includes("ě") || input[i].includes("ǐ") || input[i].includes("ǒ") || input[i].includes("ǔ")) {
+        tone = "3"
+        chk_pos.push([i,input[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "")+tone])
+        console.log("tone 3 dected")
+      }else if (input[i].includes("à") || input[i].includes("è") || input[i].includes("ì") || input[i].includes("ò") || input[i].includes("ù")) {
+        tone = "4"
+        chk_pos.push([i,input[i].normalize("NFD").replace(/[\u0300-\u036f]/g, "")+tone])
+        console.log(tone)
+      }
+    }
+
+    //console.log(chk_pos)
+
+    for (i=0;i<chk_pos.length;i++){
+      input[chk_pos[i][0]] = chk_pos[i][1]
+      if(typeof M[chk_pos[i][1]] !="undefined"){
+        input[chk_pos[i][0]] = M[chk_pos[i][1]]
+        let unicode = (((M[chk_pos[i][1]]).slice(2)).replace(/.$/,'')).split(";&#")
+        let unicode_arr = []
+        unicode.forEach(function(unicode) {
+            unicode_arr.push(String.fromCharCode(unicode))
+        });
+        //console.log(unicode_arr)
+        let temp = []
+
+
+
+
+        for(z=0;z<gwoyeu_romantzyh.length;z++){
+          if(unicode_arr.includes(gwoyeu_romantzyh[z][1])){
+            //console.log( unique(gwoyeu_romantzyh[z][0]) )
+            temp.push(   gwoyeu_romantzyh[z][0]    )
+          }
+        }
+        if (temp.length > 0){
+          input[chk_pos[i][0]] ='{'+ (unique(temp)).join(',')+"}"
+        }else{
+          
+        }
+        input[chk_pos[i][0]] ='{'+ (unique(temp)).join(',')+"}"
+        
+        
+      }
+    }
+    input=input.join('<br>')
+    //console.log(input)
+    gwoyeuRomatzyhCell.innerHTML=input
+    pinyin_cell = pinyinCell.innerHTML.split(" ")
+    pinyin_cell = pinyin_cell.join('<br>')
+    pinyinCell.innerHTML = pinyin_cell
+
+    //end
+
+
+
+  });
+
+  table.addEventListener("dblclick", function(event) {
+    let targetRow = event.target.parentNode;
+    if (targetRow.rowIndex !== 0) {
+      targetRow.parentNode.removeChild(targetRow);
+    }
+  });
+
+  inputText.addEventListener("input", function() {
+    text.innerHTML = inputText.value;
+  });
+  inputText.addEventListener("input", function() {
+    let lastChar = inputText.value[inputText.value.length - 1];
+    let vowels = "AEIOUaeiou";
+    if (vowels.indexOf(lastChar) !== -1) {
+      square1.innerHTML = lastChar + "&#772";
+      square2.innerHTML = lastChar + "&#769";
+      square3.innerHTML = lastChar + "&#780;";
+      square4.innerHTML = lastChar + "&#768;";
+    } else {
+      square1.innerHTML = "";
+      square2.innerHTML = "";
+      square3.innerHTML = "";
+      square4.innerHTML = "";
+    }
+  });
+
+square1.addEventListener("click", function() {
+  event.preventDefault();
+  text.innerHTML = text.innerHTML.slice(0, -1) + square1.innerHTML;
+  inputText.value = inputText.value.slice(0, -1) + square1.innerHTML;
+});
+square2.addEventListener("click", function() {
+  event.preventDefault();
+  text.innerHTML = text.innerHTML.slice(0, -1) + square2.innerHTML;
+  inputText.value = inputText.value.slice(0, -1) + square2.innerHTML;
+});
+square3.addEventListener("click", function() {
+  event.preventDefault();
+  text.innerHTML = text.innerHTML.slice(0, -1) + square3.innerHTML;
+  inputText.value = inputText.value.slice(0, -1) + square3.innerHTML;
+});
+square4.addEventListener("click", function() {
+  event.preventDefault();
+  text.innerHTML = text.innerHTML.slice(0, -1) + square4.innerHTML;
+  inputText.value = inputText.value.slice(0, -1) + square4.innerHTML;
+});
+</script>
+  <!-- Code injected by live-server -->
+<script type="text/javascript">
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function() {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					head.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					head.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function(msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			console.log('Live reload enabled.');
+		})();
+	}
+	// ]]>
+</script>
+
+
+</body></html>
